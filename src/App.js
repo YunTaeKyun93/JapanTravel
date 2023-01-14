@@ -1,11 +1,27 @@
 import { useRef, useState, useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
 import "./App.css";
 import MainPage from "./pages/main-page/index";
+import SignIn from "./pages/sign-in";
+import SignUp from "./pages/sign-up";
+import MyPage from "./pages/my-page";
+import TestPage from './pages/test';
+
+
+
+
+
 
 function App() {
   return (
     <div>
-      <MainPage />
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+        <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/my-page" element={<MyPage />} />
+        <Route path="/test" element={<TestPage />} />
+      </Routes>
     </div>
   );
 }
