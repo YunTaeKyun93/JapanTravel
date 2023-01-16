@@ -3,11 +3,13 @@ import useHandleErrorAsync from "../../../servicies/handle-error-async";
 import useReadAirports from "../../../servicies/read-airports";
 import useReadAnime from "../../../servicies/read-anime";
 import useReadAnimeList from "./../../../servicies/read-anime-list/index";
-import useReadPlaceByAnimeTag from "../../../servicies/read-related-place";
+import useReadRelatedPlaces from "../../../servicies/read-related-places";
+import useReadRelatedPlace from "../../../servicies/read-related-place";
+
 import useAddBookMark from "../../../servicies/add-bookmark";
 const defaultDepartureArea = {
   lat: 35.652832,
-  lng: 139.79
+  lng: 139.79,
 };
 
 const useLogic = () => {
@@ -15,7 +17,8 @@ const useLogic = () => {
   const handleErrorAsync = useHandleErrorAsync();
   const readAnimeList = useReadAnimeList();
   const readAnime = useReadAnime();
-  const readPlaceByAnimeTag = useReadPlaceByAnimeTag();
+  const readRelatedPlaces = useReadRelatedPlaces();
+  const readRelatedPlace = useReadRelatedPlace();
   const addBookMark = useAddBookMark();
   const [airports, setAirports] = useState([]);
   const [focusedLocation, setFocusedLocation] = useState(undefined);
@@ -23,6 +26,7 @@ const useLogic = () => {
   const [currentAnime, setCurrentAnime] = useState(null);
   const [selectedAnime, setSelectedAnime_] = useState(null);
   const [relatedPlaces, setRelatedPlaces] = useState([]);
+  const [relatedPlace, setRelatedPlace] = useState();
   const [bookMark, setBookMark] = useState(null);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
@@ -49,13 +53,13 @@ const useLogic = () => {
       );
       setFocusedLocation({
         position: depatureArea.coordinates,
-        name: depatureArea.name
+        name: depatureArea.name,
       });
     }
     if (typeof payload == "object") {
       setFocusedLocation({
         position: payload.coordinates,
-        name: payload.name
+        name: payload.name,
       });
     }
   };
@@ -68,12 +72,16 @@ const useLogic = () => {
   };
   const getRelatedPlaces = async () => {
     if (currentAnime != null) {
-      const relatedPlaces = await readPlaceByAnimeTag(
-        currentAnime.relatedPlaces
-      );
+      const relatedPlaces = await readRelatedPlaces(currentAnime.relatedPlaces);
       return relatedPlaces;
     }
   };
+  const getRelatedPlace = async ()=>{
+    if(selectedPlace !=null){
+      const relatedPlace = await readRelatedPlace(selectedPlace._id);
+      return relatedPlace
+    }
+  }
   const impl = async () => {
     const animeInfo = await getAnimeInfo();
     setCurrentAnime(animeInfo);
@@ -82,7 +90,13 @@ const useLogic = () => {
     const relatedPlaces = await getRelatedPlaces();
     setRelatedPlaces(relatedPlaces);
   };
-
+  const impl3 = async () => {
+    const relatedPlace = await getRelatedPlace();
+    setRelatedPlace(relatedPlace);
+  };
+  useEffect(() => {
+    impl3();
+  }, [selectedPlace]);
   useEffect(() => {
     impl();
   }, [selectedAnime]);
@@ -119,6 +133,7 @@ const useLogic = () => {
   return {
     airports, // !!!
     airportIsLoading: !airports,
+    relatedPlaceLoading : !relatedPlace,
     animeList,
     animeListIsLoading: !animeList,
     departureArea: focusedLocation?.position ?? defaultDepartureArea,
@@ -136,14 +151,14 @@ const useLogic = () => {
     setCurrentAnime,
     placesIsLoading: !relatedPlaces,
     relatedPlaces,
-    setRelatedPlaces,
+    relatedPlace,
     isDeparturePointOpened,
     isAnimationsOpened,
     isAnimationDetailsOpened,
     selectBookMark,
     handleIsDeparturePointOpenedChange,
     handleIsAnimationsOpenedChange,
-    handleIsAnimationDetailsOpenedChange
+    handleIsAnimationDetailsOpenedChange,
   };
 };
 

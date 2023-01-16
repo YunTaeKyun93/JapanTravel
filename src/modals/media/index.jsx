@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
+import Carousel from "react-multi-carousel";
+import ClipLoader from "react-spinners/ClipLoader";
 
 import useLogic from "./use-logic";
 import {
@@ -13,15 +15,18 @@ import {
   Typography,
   IconButton,
   Collapse,
-  Tooltip
+  Tooltip,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
-const MediaInfo = ({ place }) => {
+const MediaInfo = ({ place, selectBookMark, relatedPlace,relatedPlaceLoading }) => {
+  console.log(relatedPlace)
   if (place == null) {
     return null;
   }
-
+  if (relatedPlaceLoading) {
+    return <ClipLoader color="red" loading={relatedPlaceLoading} size={150} />;
+  }
   return (
     <div>
       <Card sx={{ maxWidth: "100%" }}>
@@ -35,10 +40,10 @@ const MediaInfo = ({ place }) => {
             bgcolor: "background.paper",
             borderRadius: 1,
             justifyContent: "center",
-            alignContent: "center"
+            alignContent: "center",
           }}
         >
-          {place.animeImages.map((image) => (
+          {place.locationImages.map((image) => (
             <CardMedia
               key={image._id}
               component="img"
@@ -48,13 +53,33 @@ const MediaInfo = ({ place }) => {
             />
           ))}
 
-          {/* <StyledSlider {...settings}>
-            {place.locationImages.map((image) => (
-              <CardBox key={image._id}>
-                <CardImg src={image.url} alt={image._id} />
-              </CardBox>
+          <Carousel
+            responsive={responsive}
+            swipeable={true}
+            draggable={true}
+            infinite={true}
+            autoPlay={true}
+            autoPlaySpeed={3000}
+            showDots={false}
+            removeArrowOnDeviceType={[
+              "superLargeDesktop",
+              "desktop",
+              "tablet",
+              "mobile",
+            ]}
+          >
+            {relatedPlace.relatedAnimeImage.map((image, i) => (
+              <CardMedia
+              key={i}
+              component="img"
+              height="194"
+              image={image.url}
+              alt={image.url}
+              />
             ))}
-          </StyledSlider> */}
+          </Carousel>
+
+    
         </Box>
         <CardContent></CardContent>
         <CardActions disableSpacing>
@@ -73,55 +98,49 @@ const MediaInfo = ({ place }) => {
 const MediaModal = ({
   isOpen,
   onRequestClose,
-  currentMedia,
   selectBookMark,
-  place
+  place,
+  relatedPlace,
+  relatedPlaceLoading
 }) => {
   const logic = useLogic();
   return (
     <Modal isOpen={isOpen} onRequestClose={onRequestClose}>
-      <MediaInfo place={place} />
+      <MediaInfo
+        relatedPlace={relatedPlace}
+        place={place}
+        selectBookMark={selectBookMark}
+        relatedPlaceLoading={relatedPlaceLoading}
+      />
     </Modal>
   );
 };
 
 export default MediaModal;
 
-// const settings = {
-//   dots: false,
-//   isFinite: true,
-//   speed: 500,
-//   autoplay: true,
-//   autoplaySpeed: 2000,
-//   slidesToShow: 1,
-//   slidedsToScroll: 1,
-//   centerMode: true,
-//   centerPadding: "0px"
-// };
-
-// const StyledSlider = styled(Slider)`
-//   .slick-list {
-//     width: 100%;
-//     margin: 0 auto;
-//   }
-//   .slice-slide div {
-//     cursor: pointer;
-//   }
-
-// `;
-// const CardBox = styled.div`
-//   cursor: pointer;
-//   width: 500px;
-//   height: 250px;
-// `;
-// const CardImg = styled.img`
-//   width: 100%;
-//   height: 250px;
-//   max-width: 500px;
-// `;
 const style = {
   width: "100%",
   height: "250px",
   maxWidth: 500,
-  bgcolor: "background.paper"
+  bgcolor: "background.paper",
+};
+
+const responsive = {
+  superLargeDesktop: {
+    // the naming can be any, depends on you.
+    breakpoint: { max: 4000, min: 3000 },
+    items: 1,
+  },
+  desktop: {
+    breakpoint: { max: 3000, min: 1024 },
+    items: 1,
+  },
+  tablet: {
+    breakpoint: { max: 1024, min: 464 },
+    items: 1,
+  },
+  mobile: {
+    breakpoint: { max: 464, min: 0 },
+    items: 1,
+  },
 };

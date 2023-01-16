@@ -12,16 +12,16 @@ const AnimeList = ({ logic }) => {
     <div>
       <CssBaseline />
       <Grid container spacing={2} style={{ width: "100%" }}>
-        {animeList.map((media, i) => (
-          <Grid item xs={12} md={6} key={i}>
+        {animeList.map((anime) => (
+          <Grid item xs={12} md={6} key={anime._id}>
             <Button
               variant="outlined"
               onClick={() => {
-                logic.setSelectedAnime(media._id);
+                logic.setSelectedAnime(anime._id);
               }}
             >
               <MovieIcon />
-              {media.title}
+              {anime.title}
             </Button>
           </Grid>
         ))}

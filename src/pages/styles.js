@@ -4,7 +4,7 @@ export default makeStyles(() => ({
   mapContainer: {
     height: "100vh",
     width: "100%",
-    position: "sticky",
-    top: "0"
-  }
+    position: 'sticky',
+    top: "0",
+  },
 }));

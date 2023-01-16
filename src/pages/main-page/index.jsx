@@ -36,6 +36,8 @@ const MainPage = () => {
         media={logic.mediaMarkers}
         currentMedia={logic.currentMedia}
         place={logic.selectedPlace}
+        relatedPlace ={logic.relatedPlace}
+        relatedPlaceLoading={logic.relatedPlaceLoading}
       />
     </div>
   );
